@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// ConnectEd custom colors
+				connected: {
+					blue: '#1E3A8A',
+					teal: '#0D9488',
+					orange: '#F97316',
 				}
 			},
 			borderRadius: {
