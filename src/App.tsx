@@ -10,6 +10,8 @@ import StudyBuddies from "./pages/StudyBuddies";
 import Events from "./pages/Events";
 import Messages from "./pages/Messages";
 import AlumniCorner from "./pages/AlumniCorner";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./hooks/useAuth";
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/alumni" element={<AlumniCorner />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

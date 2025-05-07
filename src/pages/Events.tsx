@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar as CalendarIcon, Search, Plus, Clock, Users, MapPin, CalendarDays } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EventType {
   id: string;
@@ -122,7 +123,7 @@ const EventCard = ({ event }: { event: EventType }) => {
         </div>
         <div className="flex items-center gap-2 text-sm">
           <MapPin className="h-4 w-4 text-muted-foreground" />
-          <span>{event.location}</span>
+          <span className="break-words">{event.location}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Users className="h-4 w-4 text-muted-foreground" />
@@ -153,6 +154,7 @@ const EventCard = ({ event }: { event: EventType }) => {
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [events, setEvents] = useState<EventType[]>(mockEvents);
+  const isMobile = useIsMobile();
 
   const filteredEvents = events.filter((event) =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -168,16 +170,17 @@ const Events = () => {
         <section className="bg-muted py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="md:flex md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Academic Events</h1>
-                <p className="mt-2 text-lg text-muted-foreground">
+              <div className="mb-4 md:mb-0">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground">Academic Events</h1>
+                <p className="mt-2 text-base md:text-lg text-muted-foreground">
                   Discover workshops, seminars, study groups, and other academic activities
                 </p>
               </div>
               <div className="mt-4 md:mt-0">
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Event
+                  {!isMobile && "Create Event"}
+                  {isMobile && "Create"}
                 </Button>
               </div>
             </div>
@@ -192,7 +195,7 @@ const Events = () => {
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search for events by title, description, or tags..."
+                  placeholder="Search for events..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -213,7 +216,7 @@ const Events = () => {
               <div>
                 <TabsContent value="list" className="mt-0">
                   {filteredEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                       {filteredEvents.map((event) => (
                         <EventCard key={event.id} event={event} />
                       ))}
@@ -229,7 +232,7 @@ const Events = () => {
                   )}
                 </TabsContent>
                 <TabsContent value="calendar">
-                  <div className="min-h-[500px] flex items-center justify-center border rounded-md p-8">
+                  <div className="min-h-[500px] flex items-center justify-center border rounded-md p-4 md:p-8">
                     <div className="text-center">
                       <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
                       <h3 className="mt-4 text-lg font-medium">Calendar View Coming Soon</h3>

@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, MessageCircle, MapPin, Calendar, Briefcase, GraduationCap } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Alumni {
   id: string;
@@ -79,32 +80,37 @@ const mockAlumni: Alumni[] = [
 ];
 
 const AlumniCard = ({ alumni }: { alumni: Alumni }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <Card className="overflow-hidden">
-      <CardContent className="p-6">
-        <div className="flex flex-col md:flex-row md:items-start gap-4">
-          <div>
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex justify-center sm:justify-start">
             <Avatar className="h-16 w-16">
               <AvatarImage src={alumni.avatar} />
               <AvatarFallback>{alumni.name.charAt(0)}</AvatarFallback>
             </Avatar>
           </div>
           <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-center sm:text-left">
               <h3 className="text-xl font-semibold">{alumni.name}</h3>
-              <Badge className="w-fit" variant="outline">Class of {alumni.graduationYear}</Badge>
+              <Badge className="w-fit mx-auto sm:mx-0" variant="outline">Class of {alumni.graduationYear}</Badge>
             </div>
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground text-center sm:text-left">
               {alumni.title} at {alumni.company}
             </p>
             <p className="mt-3 text-sm">{alumni.bio}</p>
             
             <div className="mt-4 space-y-2">
-              <div className="flex items-start gap-2">
-                <GraduationCap className="h-4 w-4 mt-1 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Expertise:</p>
-                  <div className="flex flex-wrap gap-2 mt-1">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-2">
+                <div className="flex items-center justify-center sm:justify-start gap-2 sm:mt-1">
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-medium sm:hidden">Expertise:</p>
+                </div>
+                <div className="w-full">
+                  <p className="text-sm font-medium hidden sm:block">Expertise:</p>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-1">
                     {alumni.expertise.map((skill) => (
                       <Badge key={skill} variant="secondary">{skill}</Badge>
                     ))}
@@ -112,32 +118,41 @@ const AlumniCard = ({ alumni }: { alumni: Alumni }) => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-medium sm:hidden">Location:</p>
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Location:</p>
+                  <p className="text-sm font-medium hidden sm:block">Location:</p>
                   <p className="text-sm">{alumni.location}</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-medium sm:hidden">Availability:</p>
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Availability:</p>
+                  <p className="text-sm font-medium hidden sm:block">Availability:</p>
                   <p className="text-sm">{alumni.availability}</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm font-medium sm:hidden">Mentoring:</p>
+                </div>
                 <div>
-                  <p className="text-sm font-medium">Mentoring:</p>
+                  <p className="text-sm font-medium hidden sm:block">Mentoring:</p>
                   <p className="text-sm">{alumni.mentoringTopics}</p>
                 </div>
               </div>
             </div>
             
-            <div className="mt-5 flex flex-col xs:flex-row gap-2">
+            <div className="mt-5 flex flex-col sm:flex-row gap-2">
               <Button variant="default" size="sm" className="flex-1">
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Message
@@ -157,6 +172,7 @@ const AlumniCorner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("mentors");
   const [alumni, setAlumni] = useState<Alumni[]>(mockAlumni);
+  const isMobile = useIsMobile();
   
   const filteredAlumni = alumni.filter(alum => 
     alum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -173,20 +189,32 @@ const AlumniCorner = () => {
         <section className="bg-muted py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="md:flex md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Alumni Corner</h1>
-                <p className="mt-2 text-lg text-muted-foreground">
+              <div className="mb-4 md:mb-0 text-center md:text-left">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground">Alumni Corner</h1>
+                <p className="mt-2 text-base md:text-lg text-muted-foreground">
                   Connect with alumni, explore career opportunities, and access helpful resources
                 </p>
               </div>
-              <div className="mt-4 md:mt-0 flex space-x-2">
-                <Button variant={activeFilter === "mentors" ? "default" : "outline"} onClick={() => setActiveFilter("mentors")}>
-                  Mentors
+              <div className="mt-4 md:mt-0 flex justify-center md:justify-end space-x-2">
+                <Button 
+                  variant={activeFilter === "mentors" ? "default" : "outline"} 
+                  onClick={() => setActiveFilter("mentors")}
+                  size={isMobile ? "sm" : "default"}
+                >
+                  {isMobile ? "Mentors" : "Alumni Mentors"}
                 </Button>
-                <Button variant={activeFilter === "opportunities" ? "default" : "outline"} onClick={() => setActiveFilter("opportunities")}>
-                  Opportunities
+                <Button 
+                  variant={activeFilter === "opportunities" ? "default" : "outline"} 
+                  onClick={() => setActiveFilter("opportunities")}
+                  size={isMobile ? "sm" : "default"}
+                >
+                  {isMobile ? "Jobs" : "Opportunities"}
                 </Button>
-                <Button variant={activeFilter === "resources" ? "default" : "outline"} onClick={() => setActiveFilter("resources")}>
+                <Button 
+                  variant={activeFilter === "resources" ? "default" : "outline"} 
+                  onClick={() => setActiveFilter("resources")}
+                  size={isMobile ? "sm" : "default"}
+                >
                   Resources
                 </Button>
               </div>
@@ -202,12 +230,17 @@ const AlumniCorner = () => {
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search for alumni mentors by name, title, or field..."
+                  placeholder={isMobile ? "Search alumni..." : "Search for alumni mentors by name, title, or field..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 pr-16"
                 />
-                <Button variant="ghost" className="absolute right-2 top-1.5" onClick={() => setSearchTerm("")}>
+                <Button 
+                  variant="ghost" 
+                  className="absolute right-2 top-1.5" 
+                  onClick={() => setSearchTerm("")}
+                  size="sm"
+                >
                   {searchTerm && "Clear"}
                 </Button>
               </div>

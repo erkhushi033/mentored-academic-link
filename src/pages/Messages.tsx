@@ -1,12 +1,13 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Phone, Video, Info, Send } from "lucide-react";
+import { Search, Phone, Video, Info, Send, MessageCircle, ArrowLeft } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Contact {
   id: string;
@@ -112,6 +113,13 @@ const Messages = () => {
   const [messages, setMessages] = useState<Message[]>(mockMessages[mockContacts[0].id] || []);
   const [newMessage, setNewMessage] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [showContactsOnly, setShowContactsOnly] = useState(false);
+  const isMobile = useIsMobile();
+
+  // On mobile, only show contacts initially
+  useEffect(() => {
+    setShowContactsOnly(isMobile);
+  }, [isMobile]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -135,6 +143,15 @@ const Messages = () => {
         c.id === contact.id ? { ...c, unreadCount: 0 } : c
       )
     );
+    
+    // On mobile, show the conversation view
+    if (isMobile) {
+      setShowContactsOnly(false);
+    }
+  };
+  
+  const handleBackToContacts = () => {
+    setShowContactsOnly(true);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -160,72 +177,84 @@ const Messages = () => {
         <div className="max-w-7xl mx-auto h-[calc(100vh-150px)] px-4 py-6">
           <div className="flex h-full border rounded-lg overflow-hidden">
             {/* Contact List */}
-            <div className="w-full md:w-1/3 lg:w-1/4 border-r flex flex-col">
-              <div className="p-4 border-b">
-                <h2 className="text-xl font-bold mb-4">Messages</h2>
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search conversations..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="pl-9"
-                  />
+            {(!isMobile || showContactsOnly) && (
+              <div className={`${isMobile ? 'w-full' : 'w-full md:w-1/3 lg:w-1/4'} border-r flex flex-col`}>
+                <div className="p-4 border-b">
+                  <h2 className="text-xl font-bold mb-4">Messages</h2>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search conversations..."
+                      value={searchTerm}
+                      onChange={handleSearch}
+                      className="pl-9"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="p-2">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid grid-cols-2 mb-2">
-                    <TabsTrigger value="all">All</TabsTrigger>
-                    <TabsTrigger value="unread">Unread</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-              <div className="overflow-y-auto flex-1">
-                {filteredContacts.map(contact => (
-                  <div 
-                    key={contact.id} 
-                    className={`p-4 hover:bg-muted cursor-pointer ${selectedContact?.id === contact.id ? 'bg-muted' : ''}`}
-                    onClick={() => handleContactSelect(contact)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="relative">
-                          <Avatar>
-                            <AvatarImage src={contact.avatar} />
-                            <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          {contact.status === "online" && (
-                            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></span>
+                <div className="p-2">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid grid-cols-2 mb-2">
+                      <TabsTrigger value="all">All</TabsTrigger>
+                      <TabsTrigger value="unread">Unread</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                <div className="overflow-y-auto flex-1">
+                  {filteredContacts.map(contact => (
+                    <div 
+                      key={contact.id} 
+                      className={`p-4 hover:bg-muted cursor-pointer ${selectedContact?.id === contact.id ? 'bg-muted' : ''}`}
+                      onClick={() => handleContactSelect(contact)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="relative">
+                            <Avatar>
+                              <AvatarImage src={contact.avatar} />
+                              <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            {contact.status === "online" && (
+                              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></span>
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="font-medium">{contact.name}</h3>
+                            <p className="text-sm text-muted-foreground truncate max-w-[150px]">
+                              {contact.lastMessage}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">{contact.timestamp}</p>
+                          {contact.unreadCount && contact.unreadCount > 0 && (
+                            <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-medium mt-1">
+                              {contact.unreadCount}
+                            </span>
                           )}
                         </div>
-                        <div>
-                          <h3 className="font-medium">{contact.name}</h3>
-                          <p className="text-sm text-muted-foreground truncate max-w-[150px]">
-                            {contact.lastMessage}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">{contact.timestamp}</p>
-                        {contact.unreadCount && contact.unreadCount > 0 && (
-                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-medium mt-1">
-                            {contact.unreadCount}
-                          </span>
-                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             
             {/* Chat Area */}
-            {selectedContact ? (
-              <div className="hidden md:flex flex-col flex-1">
+            {selectedContact && (!isMobile || !showContactsOnly) && (
+              <div className="flex flex-col flex-1">
                 {/* Chat Header */}
                 <div className="p-4 border-b flex justify-between items-center">
                   <div className="flex items-center space-x-3">
+                    {isMobile && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="mr-2"
+                        onClick={handleBackToContacts}
+                      >
+                        <ArrowLeft className="h-5 w-5" />
+                      </Button>
+                    )}
                     <div className="relative">
                       <Avatar>
                         <AvatarImage src={selectedContact.avatar} />
@@ -243,10 +272,10 @@ const Messages = () => {
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button size="icon" variant="ghost">
+                    <Button size="icon" variant="ghost" className="hidden md:flex">
                       <Phone className="h-5 w-5" />
                     </Button>
-                    <Button size="icon" variant="ghost">
+                    <Button size="icon" variant="ghost" className="hidden md:flex">
                       <Video className="h-5 w-5" />
                     </Button>
                     <Button size="icon" variant="ghost">
@@ -268,9 +297,9 @@ const Messages = () => {
                           <AvatarFallback>{selectedContact.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                       )}
-                      <div>
+                      <div className="max-w-[70%] sm:max-w-[80%]">
                         <div
-                          className={`rounded-lg px-4 py-2 max-w-xs sm:max-w-md ${
+                          className={`rounded-lg px-4 py-2 break-words ${
                             message.senderId === 'currentUser'
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-muted'
@@ -309,20 +338,16 @@ const Messages = () => {
                   </form>
                 </div>
               </div>
-            ) : (
+            )}
+            
+            {/* Empty state for desktop when no conversation is selected */}
+            {!selectedContact && !isMobile && (
               <div className="hidden md:flex flex-col flex-1 items-center justify-center text-center p-4">
+                <MessageCircle className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium">Select a conversation</h3>
                 <p className="text-muted-foreground">Choose someone from your contacts to start chatting</p>
               </div>
             )}
-            
-            {/* Empty state for mobile */}
-            <div className="flex md:hidden flex-1 items-center justify-center text-center p-4">
-              <div>
-                <h3 className="text-lg font-medium">Your messages</h3>
-                <p className="text-muted-foreground">Select a contact to view the conversation on mobile</p>
-              </div>
-            </div>
           </div>
         </div>
       </main>
