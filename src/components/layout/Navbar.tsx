@@ -6,17 +6,21 @@ import {
   GraduationCap,
   Menu,
   X,
-  User,
   BookOpen,
   Users,
   Calendar,
   BookUser,
   MessageSquare
 } from "lucide-react";
+import { UserAccountNav } from "./UserAccountNav";
+import AuthModal from "../auth/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
+  const { login } = useAuth();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -24,6 +28,18 @@ const Navbar = () => {
 
   const isActive = (path: string) => {
     return location.pathname === path ? "text-primary font-medium" : "";
+  };
+
+  const handleShowAuthModal = () => {
+    setShowAuthModal(true);
+  };
+
+  const handleCloseAuthModal = () => {
+    setShowAuthModal(false);
+  };
+
+  const handleAuthenticated = (user: { email: string; id: string }) => {
+    login(user);
   };
 
   return (
@@ -64,12 +80,9 @@ const Navbar = () => {
               <BookUser className="h-4 w-4 mr-2 inline" />
               Alumni Corner
             </Link>
-            <Link to="/profile">
-              <Button variant="outline" size="sm" className="ml-4">
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </Button>
-            </Link>
+            <div className="ml-4">
+              <UserAccountNav onShowAuthModal={handleShowAuthModal} />
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -141,17 +154,27 @@ const Navbar = () => {
               <BookUser className="h-4 w-4 mr-2 inline" />
               Alumni Corner
             </Link>
-            <Link
-              to="/profile"
-              className="block nav-link"
-              onClick={toggleMenu}
-            >
-              <User className="h-4 w-4 mr-2 inline" />
-              Profile
-            </Link>
+            <div className="py-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  handleShowAuthModal();
+                  toggleMenu();
+                }}
+              >
+                Sign In / Sign Up
+              </Button>
+            </div>
           </div>
         </div>
       )}
+      
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={handleCloseAuthModal}
+        onAuthenticated={handleAuthenticated}
+      />
     </nav>
   );
 };
