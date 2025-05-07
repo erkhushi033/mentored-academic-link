@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockStudyBuddies, getAIResponse, StudyBuddy } from "@/lib/mockData";
+import { mockStudyBuddies, getAIResponse, type StudyBuddy as StudyBuddyType } from "@/lib/mockData";
 import { Users, MessageCircle, Brain, Send, Clock, Calendar } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -125,7 +125,7 @@ const AIStudyAssistant = () => {
   );
 };
 
-const StudyBuddy = ({ buddy }: { buddy: StudyBuddy }) => {
+const StudyBuddy = ({ buddy }: { buddy: StudyBuddyType }) => {
   return (
     <Card className="overflow-hidden card-hover">
       <CardHeader className="pb-2">
@@ -208,7 +208,7 @@ const StudyBuddy = ({ buddy }: { buddy: StudyBuddy }) => {
 };
 
 const StudyBuddies = () => {
-  const [buddies, setBuddies] = useState<StudyBuddy[]>(mockStudyBuddies);
+  const [buddies, setBuddies] = useState<StudyBuddyType[]>(mockStudyBuddies);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredBuddies = buddies.filter((buddy) =>

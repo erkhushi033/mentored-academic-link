@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   GraduationCap,
@@ -10,14 +10,20 @@ import {
   BookOpen,
   Users,
   Calendar,
-  BookUser
+  BookUser,
+  MessageSquare
 } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path ? "text-primary font-medium" : "";
   };
 
   return (
@@ -35,21 +41,28 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <Link to="/resources" className="nav-link">
-              <BookOpen className="h-4 w-4 mr-2 inline" />
-              Resources
+            <Link to="/" className={`nav-link ${isActive("/")}`}>
+              Home
             </Link>
-            <Link to="/studybuddies" className="nav-link">
+            <Link to="/studybuddies" className={`nav-link ${isActive("/studybuddies")}`}>
               <Users className="h-4 w-4 mr-2 inline" />
               Study Buddies
             </Link>
-            <Link to="/events" className="nav-link">
+            <Link to="/resources" className={`nav-link ${isActive("/resources")}`}>
+              <BookOpen className="h-4 w-4 mr-2 inline" />
+              Resources
+            </Link>
+            <Link to="/events" className={`nav-link ${isActive("/events")}`}>
               <Calendar className="h-4 w-4 mr-2 inline" />
               Events
             </Link>
-            <Link to="/alumni" className="nav-link">
+            <Link to="/messages" className={`nav-link ${isActive("/messages")}`}>
+              <MessageSquare className="h-4 w-4 mr-2 inline" />
+              Messages
+            </Link>
+            <Link to="/alumni" className={`nav-link ${isActive("/alumni")}`}>
               <BookUser className="h-4 w-4 mr-2 inline" />
-              Alumni
+              Alumni Corner
             </Link>
             <Link to="/profile">
               <Button variant="outline" size="sm" className="ml-4">
@@ -82,36 +95,51 @@ const Navbar = () => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
-              to="/resources"
-              className="block nav-link"
+              to="/"
+              className={`block nav-link ${isActive("/")}`}
               onClick={toggleMenu}
             >
-              <BookOpen className="h-4 w-4 mr-2 inline" />
-              Resources
+              Home
             </Link>
             <Link
               to="/studybuddies"
-              className="block nav-link"
+              className={`block nav-link ${isActive("/studybuddies")}`}
               onClick={toggleMenu}
             >
               <Users className="h-4 w-4 mr-2 inline" />
               Study Buddies
             </Link>
             <Link
+              to="/resources"
+              className={`block nav-link ${isActive("/resources")}`}
+              onClick={toggleMenu}
+            >
+              <BookOpen className="h-4 w-4 mr-2 inline" />
+              Resources
+            </Link>
+            <Link
               to="/events"
-              className="block nav-link"
+              className={`block nav-link ${isActive("/events")}`}
               onClick={toggleMenu}
             >
               <Calendar className="h-4 w-4 mr-2 inline" />
               Events
             </Link>
             <Link
+              to="/messages"
+              className={`block nav-link ${isActive("/messages")}`}
+              onClick={toggleMenu}
+            >
+              <MessageSquare className="h-4 w-4 mr-2 inline" />
+              Messages
+            </Link>
+            <Link
               to="/alumni"
-              className="block nav-link"
+              className={`block nav-link ${isActive("/alumni")}`}
               onClick={toggleMenu}
             >
               <BookUser className="h-4 w-4 mr-2 inline" />
-              Alumni
+              Alumni Corner
             </Link>
             <Link
               to="/profile"
