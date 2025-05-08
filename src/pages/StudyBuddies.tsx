@@ -14,6 +14,7 @@ const StudyBuddies = () => {
   const { isAuthenticated, login } = useAuth();
   const [buddies, setBuddies] = useState<StudyBuddyType[]>(mockStudyBuddies);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("buddies");
 
   const handleAuthModalOpen = () => {
     setShowAuthModal(true);
@@ -27,6 +28,10 @@ const StudyBuddies = () => {
     login(user);
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -36,7 +41,7 @@ const StudyBuddies = () => {
 
         <section className="py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs defaultValue="buddies" className="w-full">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
               <TabsList className="mb-8 grid grid-cols-2 w-full md:w-auto">
                 <TabsTrigger value="buddies" className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
@@ -48,7 +53,7 @@ const StudyBuddies = () => {
                 </TabsTrigger>
               </TabsList>
               
-              <StudyBuddiesContent buddies={buddies} />
+              <StudyBuddiesContent buddies={buddies} defaultTab={activeTab} />
             </Tabs>
           </div>
         </section>
