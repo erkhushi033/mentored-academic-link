@@ -154,6 +154,7 @@ const EventCard = ({ event }: { event: EventType }) => {
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [events, setEvents] = useState<EventType[]>(mockEvents);
+  const [activeView, setActiveView] = useState("list");
   const isMobile = useIsMobile();
 
   const filteredEvents = events.filter((event) =>
@@ -204,7 +205,7 @@ const Events = () => {
 
               {/* View switcher */}
               <div className="flex justify-end">
-                <Tabs defaultValue="list">
+                <Tabs value={activeView} onValueChange={setActiveView} defaultValue="list">
                   <TabsList className="grid grid-cols-2">
                     <TabsTrigger value="list">List</TabsTrigger>
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
@@ -214,34 +215,36 @@ const Events = () => {
 
               {/* Events grid */}
               <div>
-                <TabsContent value="list" className="mt-0">
-                  {filteredEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                      {filteredEvents.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
+                <Tabs value={activeView} onValueChange={setActiveView}>
+                  <TabsContent value="list" className="mt-0">
+                    {filteredEvents.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                        {filteredEvents.map((event) => (
+                          <EventCard key={event.id} event={event} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">No events found</h3>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Try changing your search criteria or create a new event.
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                  <TabsContent value="calendar">
+                    <div className="min-h-[500px] flex items-center justify-center border rounded-md p-4 md:p-8">
+                      <div className="text-center">
+                        <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">Calendar View Coming Soon</h3>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          We're working on implementing a calendar view for events.
+                        </p>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">No events found</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Try changing your search criteria or create a new event.
-                      </p>
-                    </div>
-                  )}
-                </TabsContent>
-                <TabsContent value="calendar">
-                  <div className="min-h-[500px] flex items-center justify-center border rounded-md p-4 md:p-8">
-                    <div className="text-center">
-                      <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">Calendar View Coming Soon</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        We're working on implementing a calendar view for events.
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
           </div>
