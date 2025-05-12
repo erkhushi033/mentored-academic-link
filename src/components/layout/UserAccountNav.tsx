@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, User, MessageCircleHelp } from "lucide-react";
+import { LogOut, Settings, User, MessageCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 
@@ -65,7 +65,7 @@ export function UserAccountNav({ onShowAuthModal }: UserAccountNavProps) {
         </Link>
         <Link to="/feedback">
           <DropdownMenuItem>
-            <MessageCircleHelp className="mr-2 h-4 w-4" />
+            <MessageCircle className="mr-2 h-4 w-4" />
             <span>Feedback</span>
           </DropdownMenuItem>
         </Link>

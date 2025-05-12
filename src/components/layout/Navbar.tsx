@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import {
   Calendar,
   BookUser,
   MessageSquare,
-  MessageCircleHelp
+  MessageCircle
 } from "lucide-react";
 import { UserAccountNav } from "./UserAccountNav";
 import AuthModal from "../auth/AuthModal";
@@ -82,7 +81,7 @@ const Navbar = () => {
               Alumni Corner
             </Link>
             <Link to="/feedback" className={`nav-link ${isActive("/feedback")}`}>
-              <MessageCircleHelp className="h-4 w-4 mr-2 inline" />
+              <MessageCircle className="h-4 w-4 mr-2 inline" />
               Feedback
             </Link>
             <div className="ml-4">
@@ -164,7 +163,7 @@ const Navbar = () => {
               className={`block nav-link ${isActive("/feedback")}`}
               onClick={toggleMenu}
             >
-              <MessageCircleHelp className="h-4 w-4 mr-2 inline" />
+              <MessageCircle className="h-4 w-4 mr-2 inline" />
               Feedback
             </Link>
             <div className="py-2">
