@@ -10,7 +10,8 @@ import {
   Users,
   Calendar,
   BookUser,
-  MessageSquare
+  MessageSquare,
+  MessageCircleHelp
 } from "lucide-react";
 import { UserAccountNav } from "./UserAccountNav";
 import AuthModal from "../auth/AuthModal";
@@ -39,7 +40,7 @@ const Navbar = () => {
   };
 
   const handleAuthenticated = (user: { email: string; id: string }) => {
-    login(user);
+    login(user.email, ""); // This won't actually be used since we're now using Supabase auth
   };
 
   return (
@@ -79,6 +80,10 @@ const Navbar = () => {
             <Link to="/alumni" className={`nav-link ${isActive("/alumni")}`}>
               <BookUser className="h-4 w-4 mr-2 inline" />
               Alumni Corner
+            </Link>
+            <Link to="/feedback" className={`nav-link ${isActive("/feedback")}`}>
+              <MessageCircleHelp className="h-4 w-4 mr-2 inline" />
+              Feedback
             </Link>
             <div className="ml-4">
               <UserAccountNav onShowAuthModal={handleShowAuthModal} />
@@ -153,6 +158,14 @@ const Navbar = () => {
             >
               <BookUser className="h-4 w-4 mr-2 inline" />
               Alumni Corner
+            </Link>
+            <Link
+              to="/feedback"
+              className={`block nav-link ${isActive("/feedback")}`}
+              onClick={toggleMenu}
+            >
+              <MessageCircleHelp className="h-4 w-4 mr-2 inline" />
+              Feedback
             </Link>
             <div className="py-2">
               <Button 

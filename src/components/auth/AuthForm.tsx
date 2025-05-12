@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form validation schema
 const authFormSchema = z.object({
@@ -36,6 +37,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   const { toast } = useToast();
+  const { login, signUp } = useAuth();
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authFormSchema),
@@ -49,32 +51,34 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuthenticated }) => {
     setIsLoading(true);
     
     try {
-      // For now, we'll use mock authentication - would be replaced with actual auth service
-      setTimeout(() => {
-        const mockUser = {
-          email: values.email,
-          id: `user_${Math.random().toString(36).substring(2, 9)}`,
-        };
-        
-        // Store user info in localStorage
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        
-        onAuthenticated(mockUser);
+      if (activeTab === "signin") {
+        await login(values.email, values.password);
+      } else {
+        await signUp(values.email, values.password);
+      }
+      
+      // Get current user after authentication
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        onAuthenticated({
+          email: user.email || "",
+          id: user.id
+        });
         
         toast({
           title: activeTab === "signin" ? "Signed in successfully" : "Account created successfully",
           description: `Welcome, ${values.email}`,
         });
-        
-        setIsLoading(false);
-      }, 800);
-    } catch (error) {
+      }
+    } catch (error: any) {
       console.error("Authentication error:", error);
       toast({
         variant: "destructive",
         title: "Authentication failed",
-        description: "Please check your credentials and try again.",
+        description: error.message || "Please check your credentials and try again.",
       });
+    } finally {
       setIsLoading(false);
     }
   }
