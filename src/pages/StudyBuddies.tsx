@@ -27,7 +27,7 @@ const StudyBuddies = () => {
   const handleAuthenticated = (user: { email: string; id: string }) => {
     // Fixing the login call by providing both required arguments
     // The second argument was missing, adding an empty string as password
-    login(user);
+    login(user.email, "");
   };
 
   const handleTabChange = (value: string) => {
