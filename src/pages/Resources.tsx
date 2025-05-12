@@ -116,7 +116,7 @@ const Resources = () => {
                             <SelectValue placeholder="Subject" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Subjects</SelectItem>
+                            <SelectItem value="all">All Subjects</SelectItem>
                             {subjects.map((subject) => (
                               <SelectItem key={subject} value={subject}>
                                 {subject}
@@ -132,7 +132,7 @@ const Resources = () => {
                             <SelectValue placeholder="Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Types</SelectItem>
+                            <SelectItem value="all">All Types</SelectItem>
                             {types.map((type) => (
                               <SelectItem key={type} value={type}>
                                 {type.charAt(0).toUpperCase() + type.slice(1)}
