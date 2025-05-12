@@ -1,4 +1,3 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +8,9 @@ import { Calendar, Book, BookOpen, Users, MessageCircle, GraduationCap, Settings
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const mockUserData = {
   name: "Alex Johnson",
@@ -43,6 +45,14 @@ const mockUserData = {
 
 const Profile = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string>(
+    user?.user_metadata?.avatar_url || mockUserData.avatar
+  );
+  
+  const handleAvatarChange = (url: string) => {
+    setAvatarUrl(url);
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,10 +66,13 @@ const Profile = () => {
             <div className="px-4 md:px-8 pb-6 relative">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
                 <div className="flex flex-col sm:flex-row sm:items-end">
-                  <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background -mt-12 sm:-mt-16 z-10">
-                    <AvatarImage src={mockUserData.avatar} />
-                    <AvatarFallback>{mockUserData.name[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="-mt-12 sm:-mt-16 z-10">
+                    <AvatarUpload 
+                      currentAvatarUrl={avatarUrl} 
+                      onAvatarChange={handleAvatarChange}
+                      size={isMobile ? "md" : "lg"}
+                    />
+                  </div>
                   <div className="mt-4 sm:mt-0 sm:ml-4 mb-2 text-center sm:text-left">
                     <h1 className="text-2xl md:text-3xl font-bold">{mockUserData.name}</h1>
                     <p className="text-muted-foreground">{mockUserData.username}</p>

@@ -12,15 +12,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { mockResources, Resource } from "@/lib/mockData";
-import { BookOpen, Search, ThumbsUp, Download, File, FileText, Video, BookOpen as Book, Newspaper } from "lucide-react";
+import { BookOpen, Search, ThumbsUp, Download, File, FileText, Video, BookOpen as Book, Newspaper, Plus } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { DocumentUpload } from "@/components/resources/DocumentUpload";
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [resources, setResources] = useState<Resource[]>(mockResources);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
   // Get unique subjects from resources
   const subjects = Array.from(new Set(mockResources.map(r => r.subject)));
@@ -61,8 +64,28 @@ const Resources = () => {
   };
 
   const handleUpload = () => {
-    // This would open an upload modal in a real app
-    console.log("Upload clicked");
+    setIsUploadDialogOpen(true);
+  };
+
+  const handleUploadComplete = (newResource: any) => {
+    setIsUploadDialogOpen(false);
+    // In a real app, you would fetch the updated resources from the API
+    // For now, we'll just add the new resource to our local state
+    setResources(prev => [
+      {
+        id: newResource.id || `new-${Date.now()}`,
+        title: newResource.title,
+        description: newResource.description || "No description provided",
+        subject: newResource.category,
+        type: newResource.category,
+        uploadedBy: "You",
+        uploadDate: new Date().toISOString(),
+        likes: 0,
+        downloads: 0,
+        url: newResource.file_url
+      },
+      ...prev
+    ]);
   };
 
   return (
@@ -80,10 +103,20 @@ const Resources = () => {
                 </p>
               </div>
               <div className="mt-4 md:mt-0">
-                <Button onClick={handleUpload}>
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Upload Resource
-                </Button>
+                <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button onClick={handleUpload}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Upload Resource
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px] p-0">
+                    <DocumentUpload 
+                      onUploadComplete={handleUploadComplete} 
+                      onCancel={() => setIsUploadDialogOpen(false)}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>

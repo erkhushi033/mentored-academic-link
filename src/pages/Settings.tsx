@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,23 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { Settings as SettingsIcon, Bell, Lock, Save, User } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { useAuth } from "@/hooks/useAuth";
 
 const Settings = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("profile");
+  const { user } = useAuth();
   
   const [profileForm, setProfileForm] = useState({
     fullName: "Alex Johnson",
     username: "alexjohnson",
     email: "alex.johnson@university.edu",
-    bio: "Computer Science student interested in AI and machine learning. Looking for study partners for advanced algorithms."
+    bio: "Computer Science student interested in AI and machine learning. Looking for study partners for advanced algorithms.",
+    avatarUrl: user?.user_metadata?.avatar_url || "https://github.com/shadcn.png"
   });
   
   const [notificationSettings, setNotificationSettings] = useState({
@@ -37,6 +39,10 @@ const Settings = () => {
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfileForm((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handleAvatarChange = (url: string) => {
+    setProfileForm(prev => ({ ...prev, avatarUrl: url }));
   };
   
   const handleNotificationChange = (setting: string) => {
@@ -133,18 +139,11 @@ const Settings = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
-                      <Avatar className="h-24 w-24">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>AJ</AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-2">
-                        <Button variant="outline" size={isMobile ? "sm" : "default"}>
-                          Change Avatar
-                        </Button>
-                        <p className="text-sm text-muted-foreground">
-                          Recommended: Square image, at least 300x300px
-                        </p>
-                      </div>
+                      <AvatarUpload
+                        currentAvatarUrl={profileForm.avatarUrl}
+                        onAvatarChange={handleAvatarChange}
+                        size={isMobile ? "sm" : "md"}
+                      />
                     </div>
                     
                     <Separator />
