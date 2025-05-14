@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,23 +11,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockResources, Resource } from "@/lib/mockData";
 import { BookOpen, Search, ThumbsUp, Download, File, FileText, Video, BookOpen as Book, Newspaper, Plus } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DocumentUpload } from "@/components/resources/DocumentUpload";
+import { useResources, Resource } from "@/hooks/use-resources";
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
-  const [resources, setResources] = useState<Resource[]>(mockResources);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const { resources, isLoading, error, fetchResources } = useResources();
 
   // Get unique subjects from resources
-  const subjects = Array.from(new Set(mockResources.map(r => r.subject)));
-  const types = Array.from(new Set(mockResources.map(r => r.type)));
+  const subjects = Array.from(new Set(resources.map(r => r.category)));
+  const types = Array.from(new Set(resources.map(r => r.category)));
 
   const getResourceIcon = (type: string) => {
     switch (type) {
@@ -49,10 +49,10 @@ const Resources = () => {
   const filteredResources = resources.filter(resource => {
     const matchesSearch = searchTerm === "" || 
       resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.description.toLowerCase().includes(searchTerm.toLowerCase());
+      (resource.description && resource.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesSubject = subjectFilter === "" || resource.subject === subjectFilter;
-    const matchesType = typeFilter === "" || resource.type === typeFilter;
+    const matchesSubject = subjectFilter === "" || resource.category === subjectFilter;
+    const matchesType = typeFilter === "" || resource.category === typeFilter;
     
     return matchesSearch && matchesSubject && matchesType;
   });
@@ -67,25 +67,9 @@ const Resources = () => {
     setIsUploadDialogOpen(true);
   };
 
-  const handleUploadComplete = (newResource: any) => {
+  const handleUploadComplete = (newResource: Resource) => {
     setIsUploadDialogOpen(false);
-    // In a real app, you would fetch the updated resources from the API
-    // For now, we'll just add the new resource to our local state
-    setResources(prev => [
-      {
-        id: newResource.id || `new-${Date.now()}`,
-        title: newResource.title,
-        description: newResource.description || "No description provided",
-        subject: newResource.category,
-        type: newResource.category,
-        uploadedBy: "You",
-        uploadDate: new Date().toISOString(),
-        likes: 0,
-        downloads: 0,
-        url: newResource.file_url
-      },
-      ...prev
-    ]);
+    fetchResources(); // Refresh the resources list from the database
   };
 
   return (
@@ -149,7 +133,7 @@ const Resources = () => {
                             <SelectValue placeholder="Subject" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Subjects</SelectItem>
+                            <SelectItem value="">All Subjects</SelectItem>
                             {subjects.map((subject) => (
                               <SelectItem key={subject} value={subject}>
                                 {subject}
@@ -165,7 +149,7 @@ const Resources = () => {
                             <SelectValue placeholder="Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="">All Types</SelectItem>
                             {types.map((type) => (
                               <SelectItem key={type} value={type}>
                                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -193,7 +177,12 @@ const Resources = () => {
                     <TabsTrigger value="recent">Recent</TabsTrigger>
                   </TabsList>
                   <TabsContent value="all" className="space-y-4">
-                    {filteredResources.length > 0 ? (
+                    {isLoading ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+                        <p className="mt-4 text-muted-foreground">Loading resources...</p>
+                      </div>
+                    ) : filteredResources.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredResources.map((resource) => (
                           <Card key={resource.id} className="overflow-hidden card-hover">
@@ -201,14 +190,11 @@ const Resources = () => {
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    {getResourceIcon(resource.type)}
+                                    {getResourceIcon(resource.category)}
                                   </div>
                                   <div className="text-sm font-medium">
-                                    {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                                    {resource.category.charAt(0).toUpperCase() + resource.category.slice(1)}
                                   </div>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {resource.subject}
                                 </div>
                               </div>
                               <CardTitle className="mt-3 text-lg">
@@ -217,10 +203,10 @@ const Resources = () => {
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground line-clamp-2">
-                                {resource.description}
+                                {resource.description || "No description provided"}
                               </p>
                               <div className="mt-4 text-xs text-muted-foreground">
-                                Uploaded by {resource.uploadedBy} on {new Date(resource.uploadDate).toLocaleDateString()}
+                                Uploaded on {new Date(resource.created_at).toLocaleDateString()}
                               </div>
                             </CardContent>
                             <CardFooter className="border-t bg-muted/50 px-6 py-3">
@@ -228,14 +214,21 @@ const Resources = () => {
                                 <div className="flex space-x-4">
                                   <div className="flex items-center text-sm">
                                     <ThumbsUp className="h-4 w-4 mr-1" />
-                                    {resource.likes}
+                                    {0} {/* We'll implement likes later */}
                                   </div>
                                   <div className="flex items-center text-sm">
                                     <Download className="h-4 w-4 mr-1" />
                                     {resource.downloads}
                                   </div>
                                 </div>
-                                <Button size="sm" variant="ghost">View</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => window.open(resource.file_url || "#", "_blank")}
+                                  disabled={!resource.file_url}
+                                >
+                                  View
+                                </Button>
                               </div>
                             </CardFooter>
                           </Card>
@@ -255,7 +248,8 @@ const Resources = () => {
                   <TabsContent value="popular">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredResources
-                        .sort((a, b) => b.likes - a.likes)
+                        .slice()
+                        .sort((a, b) => b.downloads - a.downloads)
                         .slice(0, 6)
                         .map((resource) => (
                           <Card key={resource.id} className="overflow-hidden card-hover">
@@ -263,14 +257,11 @@ const Resources = () => {
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    {getResourceIcon(resource.type)}
+                                    {getResourceIcon(resource.category)}
                                   </div>
                                   <div className="text-sm font-medium">
-                                    {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                                    {resource.category.charAt(0).toUpperCase() + resource.category.slice(1)}
                                   </div>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {resource.subject}
                                 </div>
                               </div>
                               <CardTitle className="mt-3 text-lg">
@@ -279,10 +270,10 @@ const Resources = () => {
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground line-clamp-2">
-                                {resource.description}
+                                {resource.description || "No description provided"}
                               </p>
                               <div className="mt-4 text-xs text-muted-foreground">
-                                Uploaded by {resource.uploadedBy} on {new Date(resource.uploadDate).toLocaleDateString()}
+                                Uploaded on {new Date(resource.created_at).toLocaleDateString()}
                               </div>
                             </CardContent>
                             <CardFooter className="border-t bg-muted/50 px-6 py-3">
@@ -290,14 +281,21 @@ const Resources = () => {
                                 <div className="flex space-x-4">
                                   <div className="flex items-center text-sm">
                                     <ThumbsUp className="h-4 w-4 mr-1" />
-                                    {resource.likes}
+                                    {0}
                                   </div>
                                   <div className="flex items-center text-sm">
                                     <Download className="h-4 w-4 mr-1" />
                                     {resource.downloads}
                                   </div>
                                 </div>
-                                <Button size="sm" variant="ghost">View</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => window.open(resource.file_url || "#", "_blank")}
+                                  disabled={!resource.file_url}
+                                >
+                                  View
+                                </Button>
                               </div>
                             </CardFooter>
                           </Card>
@@ -308,7 +306,8 @@ const Resources = () => {
                   <TabsContent value="recent">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredResources
-                        .sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime())
+                        .slice()
+                        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                         .slice(0, 6)
                         .map((resource) => (
                           <Card key={resource.id} className="overflow-hidden card-hover">
@@ -316,14 +315,11 @@ const Resources = () => {
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    {getResourceIcon(resource.type)}
+                                    {getResourceIcon(resource.category)}
                                   </div>
                                   <div className="text-sm font-medium">
-                                    {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                                    {resource.category.charAt(0).toUpperCase() + resource.category.slice(1)}
                                   </div>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {resource.subject}
                                 </div>
                               </div>
                               <CardTitle className="mt-3 text-lg">
@@ -332,10 +328,10 @@ const Resources = () => {
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground line-clamp-2">
-                                {resource.description}
+                                {resource.description || "No description provided"}
                               </p>
                               <div className="mt-4 text-xs text-muted-foreground">
-                                Uploaded by {resource.uploadedBy} on {new Date(resource.uploadDate).toLocaleDateString()}
+                                Uploaded on {new Date(resource.created_at).toLocaleDateString()}
                               </div>
                             </CardContent>
                             <CardFooter className="border-t bg-muted/50 px-6 py-3">
@@ -343,14 +339,21 @@ const Resources = () => {
                                 <div className="flex space-x-4">
                                   <div className="flex items-center text-sm">
                                     <ThumbsUp className="h-4 w-4 mr-1" />
-                                    {resource.likes}
+                                    {0}
                                   </div>
                                   <div className="flex items-center text-sm">
                                     <Download className="h-4 w-4 mr-1" />
                                     {resource.downloads}
                                   </div>
                                 </div>
-                                <Button size="sm" variant="ghost">View</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={() => window.open(resource.file_url || "#", "_blank")}
+                                  disabled={!resource.file_url}
+                                >
+                                  View
+                                </Button>
                               </div>
                             </CardFooter>
                           </Card>
