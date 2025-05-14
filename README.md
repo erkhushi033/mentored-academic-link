@@ -5,49 +5,73 @@
 
 
 
+# ConnectEd
 
-**Use your preferred IDE**
+**ConnectEd** is a full-stack web application designed to enhance daily academic interactions among students, faculty, researchers, alumni, and other college community members. It aims to create an inclusive ecosystem for mentorship, study collaboration, resource sharing, and event engagement.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 📌 Project Overview
 
-Follow these steps:
+ConnectEd enables seamless connections in an academic setting by offering smart matchmaking, real-time messaging, study buddy discovery, and a resource-sharing hub. With intuitive UI/UX, personalized dashboards, and role-based access, the platform supports productive collaboration across roles and interests.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🎯 Target Users
 
-# Step 3: Install the necessary dependencies.
-npm i
+- 🎓 Students  
+- 🧑‍🏫 Professors and Faculty  
+- 🔬 Research Assistants  
+- 🎓 Alumni  
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 🚀 Core Features
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **User Profiles**: Academic-focused profiles with interests, goals, and availability.
+- **Smart Matchmaking**: Match mentors, peers, and collaborators based on academic data.
+- **Study Buddy Finder**: Connects users with similar interests for study collaboration.
+- **Real-time Messaging**: Integrated chat using Socket.IO.
+- **Document Sharing Hub**: Upload/download study materials, notes, and past papers.
+- **Academic Event Calendar**: Join or host events, webinars, and group sessions.
+- **Alumni & Career Corner**: Alumni post job/internship opportunities and offer mentorship.
+- **AI Integration** _(Optional)_: Chatbot assistant for academic Q&A and revision help.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🛠️ Tech Stack
 
-## What technologies are used for this project?
+| Layer        | Technologies Used                               |
+|--------------|--------------------------------------------------|
+| **Frontend** | React + TypeScript, Tailwind CSS, Lucide Icons   |
+| **Backend**  | Node.js, Express.js                              |
+| **Database** | MongoDB (with Mongoose)                          |
+| **Auth**     | JWT or OAuth2                                    |
+| **Chat**     | Socket.IO                                        |
+| **File Storage** | Firebase Storage or AWS S3                   |
+| **Hosting**  | Vercel (Frontend), Render/Heroku (Backend)       |
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🎨 UI/UX Guidelines
+
+- **Color Palette**:  
+  - `#1E3A8A` (Trust Blue)  
+  - `#0D9488` (Creative Teal)  
+  - `#F97316` (Highlight Orange)
+- Clean, card-based layout
+- Role-based navigation
+- Responsive Design with dark/light modes
+
+---
+
+## 📋 Project Structure
+
+
+/client → Frontend (React, Tailwind)
+/server → Backend (Express, MongoDB)
+/models → Mongoose Models
+/routes → API Endpoints
+/socket → Socket.IO Configuration
+/uploads → Resource Files (Firebase or S3)
+.env → Environment Variables
