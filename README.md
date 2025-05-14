@@ -28,6 +28,7 @@ ConnectEd enables seamless connections in an academic setting by offering smart 
 
 ## 🚀 Core Features
 
+- **AI Integration** : Chatbot assistant for academic Q&A and revision help.
 - **User Profiles**: Academic-focused profiles with interests, goals, and availability.
 - **Smart Matchmaking**: Match mentors, peers, and collaborators based on academic data.
 - **Study Buddy Finder**: Connects users with similar interests for study collaboration.
@@ -35,7 +36,7 @@ ConnectEd enables seamless connections in an academic setting by offering smart 
 - **Document Sharing Hub**: Upload/download study materials, notes, and past papers.
 - **Academic Event Calendar**: Join or host events, webinars, and group sessions.
 - **Alumni & Career Corner**: Alumni post job/internship opportunities and offer mentorship.
-- **AI Integration** _(Optional)_: Chatbot assistant for academic Q&A and revision help.
+
 
 ---
 
