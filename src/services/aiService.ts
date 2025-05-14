@@ -1,5 +1,5 @@
 
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -49,7 +49,11 @@ export const getAIResponse = async (prompt: string): Promise<string> => {
     return data.choices[0].message.content;
   } catch (error) {
     console.error("Error getting AI response:", error);
-    toast.error("Failed to get a response from the AI assistant");
+    toast({
+      title: "Error",
+      description: "Failed to get a response from the AI assistant",
+      variant: "destructive",
+    });
     return "I'm sorry, I couldn't process your request at the moment. Please try again later.";
   }
 };
