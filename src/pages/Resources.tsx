@@ -9,8 +9,8 @@ import { ResourcesTabs } from "@/components/resources/ResourcesTabs";
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [subjectFilter, setSubjectFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const { resources, isLoading, fetchResources } = useResources();
 
@@ -23,8 +23,8 @@ const Resources = () => {
       resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (resource.description && resource.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesSubject = subjectFilter === "" || resource.category === subjectFilter;
-    const matchesType = typeFilter === "" || resource.category === typeFilter;
+    const matchesSubject = subjectFilter === "all" || resource.category === subjectFilter;
+    const matchesType = typeFilter === "all" || resource.category === typeFilter;
     
     return matchesSearch && matchesSubject && matchesType;
   });
