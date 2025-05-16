@@ -18,6 +18,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { CalendarPlus, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CreateStudyEventProps {
   onEventCreated?: (event: {
@@ -36,9 +38,11 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !description || !date || !time || !location) {
@@ -49,29 +53,73 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
       });
       return;
     }
-
-    if (onEventCreated) {
-      onEventCreated({
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to create study events",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Save event to Supabase
+      const { error } = await supabase.from('study_events').insert({
+        user_id: user.id,
         title,
         description,
-        date,
-        time,
+        event_date: date.toISOString().split('T')[0],
+        event_time: time,
         location
       });
+      
+      if (error) {
+        console.error('Error creating study event:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create study event",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      toast({
+        title: "Success",
+        description: "Study event created successfully",
+      });
+      
+      // Call the callback with event data
+      if (onEventCreated) {
+        onEventCreated({
+          title,
+          description,
+          date,
+          time,
+          location
+        });
+      }
+      
+      // Reset form and close dialog
+      setTitle("");
+      setDescription("");
+      setDate(new Date());
+      setTime("");
+      setLocation("");
+      setOpen(false);
+      
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    toast({
-      title: "Success",
-      description: "Study event created successfully",
-    });
-
-    // Reset form and close dialog
-    setTitle("");
-    setDescription("");
-    setDate(new Date());
-    setTime("");
-    setLocation("");
-    setOpen(false);
   };
 
   return (
@@ -164,10 +212,20 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setOpen(false)}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
-            <Button type="submit">Create Event</Button>
+            <Button 
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating..." : "Create Event"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

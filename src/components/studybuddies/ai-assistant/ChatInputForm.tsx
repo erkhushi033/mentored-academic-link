@@ -9,28 +9,30 @@ interface ChatInputFormProps {
   setQuestion: (question: string) => void;
   handleSendMessage: (e: FormEvent) => Promise<void>;
   isLoading: boolean;
+  disabled?: boolean;
 }
 
 const ChatInputForm = ({ 
   question, 
   setQuestion, 
   handleSendMessage, 
-  isLoading 
+  isLoading,
+  disabled = false
 }: ChatInputFormProps) => {
   return (
     <form onSubmit={handleSendMessage} className="w-full flex gap-2" aria-label="Chat input form">
       <Input
-        placeholder="Ask a question..."
+        placeholder={disabled ? "Please log in to chat" : "Ask a question..."}
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         className="flex-grow"
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         aria-label="Question input"
       />
       <Button 
         type="submit" 
         size="icon" 
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         aria-label="Send message"
       >
         <Send className="h-4 w-4" />
