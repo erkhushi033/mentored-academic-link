@@ -31,7 +31,7 @@ const StudyBuddiesContent = ({ buddies, defaultTab }: StudyBuddiesContentProps) 
         <StudyBuddiesList buddies={filteredBuddies} />
       </TabsContent>
       
-      <TabsContent value="ai" className="h-[calc(100vh-320px)] min-h-[500px]">
+      <TabsContent value="ai" className="h-[calc(100vh-320px)] min-h-[600px]">
         <AIStudyAssistant />
       </TabsContent>
     </Tabs>

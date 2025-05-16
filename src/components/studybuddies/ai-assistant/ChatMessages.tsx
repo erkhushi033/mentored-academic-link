@@ -19,7 +19,7 @@ const ChatMessages = ({ messages, isLoading }: ChatMessagesProps) => {
   }, [messages]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-y-auto" aria-live="polite" role="log" aria-label="Chat conversation">
       {messages.map((message) => (
         <div
           key={message.id}
@@ -39,7 +39,7 @@ const ChatMessages = ({ messages, isLoading }: ChatMessagesProps) => {
       {isLoading && (
         <div className="flex justify-start">
           <div className="rounded-lg px-4 py-2 bg-muted text-foreground">
-            <div className="flex space-x-2 items-center">
+            <div className="flex space-x-2 items-center" aria-label="Loading response">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-75"></div>
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-150"></div>
@@ -47,7 +47,7 @@ const ChatMessages = ({ messages, isLoading }: ChatMessagesProps) => {
           </div>
         </div>
       )}
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef} tabIndex={-1} />
     </div>
   );
 };
