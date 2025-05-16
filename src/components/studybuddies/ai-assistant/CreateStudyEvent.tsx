@@ -17,7 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { CalendarPlus, Clock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 interface CreateStudyEventProps {
   onEventCreated?: (event: {
@@ -33,7 +33,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
   const { toast } = useToast();
@@ -68,7 +68,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
     // Reset form and close dialog
     setTitle("");
     setDescription("");
-    setDate(undefined);
+    setDate(new Date());
     setTime("");
     setLocation("");
     setOpen(false);
@@ -77,7 +77,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="mb-4">
+        <Button variant="outline" className="mb-4 w-full" aria-label="Create new study event">
           <CalendarPlus className="mr-2 h-4 w-4" />
           Create Study Event
         </Button>
@@ -98,6 +98,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
               value={title} 
               onChange={(e) => setTitle(e.target.value)} 
               placeholder="e.g., Calculus Study Group"
+              aria-required="true"
             />
           </div>
           
@@ -108,6 +109,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
               placeholder="Describe what you'll be studying"
+              aria-required="true"
             />
           </div>
           
@@ -119,6 +121,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start text-left font-normal"
+                    aria-required="true"
                   >
                     {date ? format(date, "PPP") : "Select a date"}
                   </Button>
@@ -142,7 +145,8 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
                   id="time" 
                   type="time" 
                   value={time} 
-                  onChange={(e) => setTime(e.target.value)} 
+                  onChange={(e) => setTime(e.target.value)}
+                  aria-required="true"
                 />
               </div>
             </div>
@@ -155,6 +159,7 @@ const CreateStudyEvent = ({ onEventCreated }: CreateStudyEventProps) => {
               value={location} 
               onChange={(e) => setLocation(e.target.value)} 
               placeholder="e.g., Library, Room 204 or Zoom"
+              aria-required="true"
             />
           </div>
           

@@ -26,7 +26,9 @@ export const useAIChat = () => {
 
   // Set the API key when it changes
   useEffect(() => {
-    configureAIService(apiKey);
+    if (apiKey) {
+      configureAIService(apiKey);
+    }
   }, [apiKey]);
 
   const handleSaveApiKey = () => {

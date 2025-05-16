@@ -20,31 +20,26 @@ const AIStudyAssistant = () => {
   } = useAIChat();
 
   const handleEventCreated = (event: any) => {
-    console.log("New study event created:", event);
-    // Here you would typically save the event to a database
-    // For now we'll just display it in the chat
+    // Format the event details as a message
     const eventDate = event.date ? new Date(event.date) : new Date();
     const formattedDate = eventDate.toLocaleDateString();
     
     const eventMessage = `
-New study event created:
-📚 ${event.title}
-📝 ${event.description}
-📅 ${formattedDate} at ${event.time}
-📍 ${event.location}
+📚 New Study Event Created 📚
+Title: ${event.title}
+Description: ${event.description}
+Date: ${formattedDate}
+Time: ${event.time}
+Location: ${event.location}
 `;
     
-    // Add the event details as an AI message
-    const newMessage = {
-      id: Date.now(),
-      content: eventMessage,
-      isAI: true
-    };
+    // Add the event as a message and trigger the AI response
+    setQuestion(eventMessage);
     
-    // This will add the event to the chat messages
-    setQuestion("I created a study event");
+    // Use setTimeout to ensure the question state is updated before sending
     setTimeout(() => {
-      handleSendMessage(new Event('submit') as any);
+      const fakeEvent = new Event('submit') as any;
+      handleSendMessage(fakeEvent);
     }, 100);
   };
 
